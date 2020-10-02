@@ -22,9 +22,28 @@ const sortObjByValues = (obj) => {
   return sortable;
 };
 
+const removeProps = (obj, keys) => {
+  if(!obj) {
+    return
+  }
+  if(obj instanceof Array){
+    obj.forEach(function(item){
+      removeProps(item,keys)
+    });
+  }
+  else if(typeof obj === 'object'){
+    Object.getOwnPropertyNames(obj).forEach(function(key){
+      if(keys.indexOf(key) !== -1)delete obj[key];
+      else removeProps(obj[key],keys);
+    });
+  }
+  return obj
+}
+
 module.exports = {
   sortObjByValues,
   formatBytes,
   sizeResults,
   errorPath,
+  removeProps
 };

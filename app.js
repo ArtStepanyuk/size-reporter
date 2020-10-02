@@ -1,51 +1,21 @@
-// const sizeof = require("sizeof");
-const sizeof = require("object-sizeof");
-const fs = require("fs").promises;
-const {
-  errorPath,
-  sizeResults,
-  formatBytes,
-  sortObjByValues,
-} = require("./helpers");
+const compareSize = require('./services/size-compare.service')
+const cliSelect = require('cli-select');
+const chalk = require('chalk');
 
-const prepareResults = async (resultObject, filename) => {
-  let holder = {};
-  let errors = [];
-  let totalSize = sizeof(resultObject);
-
-  const updateHolder = (obj, key) => {
-    const size = sizeof(obj[key]);
-    holder = { ...holder, [key]: size };
-  };
-
-  const getValuesSize = (obj) => {
-    try {
-      const keys = Object.keys(obj);
-      for (let key of keys) {
-        updateHolder(obj, key);
-        if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-          getValuesSize(obj[key]);
-        }
-        if (Array.isArray(obj[key])) {
-          updateHolder(obj, key);
-        }
-      }
-    } catch (err) {
-      errors.push(err);
+(async function main() {
+  try {
+    const {value} = await cliSelect({
+      values: ['Compare results', 'Exit', 'Delete results'],
+      valueRenderer: (value, selected) => {
+          return value;
+      },
+    })
+    switch (value) {
+      case  'Exit': return process.exit(1)
+      case  'Delete results': return process.exit(1)
+      case 'Compare results': return compareSize()
     }
-  };
-
-  getValuesSize(resultObject);
-  await fs.writeFile(
-    sizeResults(filename),
-    JSON.stringify(sortObjByValues({...holder, totalSize}), null, 4)
-  );
-  await fs.writeFile(errorPath(filename), JSON.stringify(errors, null, 4));
-};
-
-(async () => {
-  const filenames = await fs.readdir("./results");
-  for await (filename of filenames) {
-    await prepareResults(require(`./results/${filename}`), filename);
+  } catch (error) {
+    chalk.red(error)
   }
-})();
+})()

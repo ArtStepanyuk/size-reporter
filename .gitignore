@@ -1,5 +1,5 @@
 node_modules
 results/*
 errors/*
-sizeResults/*
+sizesResults/*
 !/**/.gitkeep

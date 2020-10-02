@@ -11,7 +11,7 @@ const {
 const prepareResults = async (resultObject, filename) => {
   let holder = {};
   let errors = [];
-  let totalSize = formatBytes(sizeof(resultObject));
+  let totalSize = sizeof(resultObject);
 
   const updateHolder = (obj, key) => {
     const size = sizeof(obj[key]);
@@ -23,7 +23,7 @@ const prepareResults = async (resultObject, filename) => {
       const keys = Object.keys(obj);
       for (let key of keys) {
         updateHolder(obj, key);
-        if (typeof obj[key] === 'object' && obj[key] !== null) {
+        if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
           getValuesSize(obj[key]);
         }
         if (Array.isArray(obj[key])) {

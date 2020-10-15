@@ -1,21 +1,28 @@
-const compareSize = require('./services/size-compare.service')
-const cliSelect = require('cli-select');
-const chalk = require('chalk');
+const compareSize = require("./services/size-compare.service");
+const cleanUp = require("./services/clean-up.service");
+const getSummary = require("./services/summary.service");
+const cliSelect = require("cli-select");
+const chalk = require("chalk");
 
 (async function main() {
   try {
-    const {value} = await cliSelect({
-      values: ['Compare results', 'Exit', 'Delete results'],
+    const { value } = await cliSelect({
+      values: ["Compare results", "Get summary", "Delete results", "Exit"],
       valueRenderer: (value, selected) => {
-          return value;
+        return value;
       },
-    })
+    });
     switch (value) {
-      case  'Exit': return process.exit(1)
-      case  'Delete results': return process.exit(1)
-      case 'Compare results': return compareSize()
+      case "Compare results":
+        return compareSize();
+      case "Get summary":
+        return getSummary();
+      case "Delete results":
+        return cleanUp();
+      case "Exit":
+        return process.exit(1);
     }
   } catch (error) {
-    chalk.red(error)
+    chalk.red(error);
   }
-})()
+})();

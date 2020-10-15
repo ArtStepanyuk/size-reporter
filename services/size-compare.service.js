@@ -6,8 +6,10 @@ const {
   sizeResults,
   formatBytes,
   sortObjByValues,
+  roundNumbers,
   removeProps,
 } = require("../helpers");
+const decimalsToRound = require('../constants').decimalsToRound
 
 const prepareResults = async (resultObject, filename) => {
   let holder = {};
@@ -46,11 +48,16 @@ const prepareResults = async (resultObject, filename) => {
 
 module.exports = async () => {
   const filenames = await fs.readdir("./results");
-  for await (filename of filenames) {
+  for await (filename of filenames.filter(i => i !== '.gitkeep')) {
     const file = require(`../results/${filename}`)
     const copyFile = JSON.parse(JSON.stringify(file))
+    const copyFile2 = JSON.parse(JSON.stringify(file))
     await prepareResults(file, filename);
     const cleanFile = removeProps(copyFile, ['headers', 'combined'])
     await prepareResults(cleanFile, `no-headers-no-combined-${filename}`);
+    const roundedFile = roundNumbers(copyFile2, decimalsToRound)
+    await prepareResults(roundedFile, `rounded-by-${decimalsToRound}-${filename}`);
+
+    // await fs.writeFile(`./${filename}`, JSON.stringify(roundedFile));
   }
 };

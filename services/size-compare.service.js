@@ -1,4 +1,5 @@
 // const sizeof = require("sizeof");
+const { cloneDeep } = require("lodash");
 const sizeof = require("object-sizeof");
 const fs = require("fs").promises;
 const {
@@ -50,14 +51,12 @@ module.exports = async () => {
   const filenames = await fs.readdir("./results");
   for await (filename of filenames.filter(i => i !== '.gitkeep')) {
     const file = require(`../results/${filename}`)
-    const copyFile = JSON.parse(JSON.stringify(file))
-    const copyFile2 = JSON.parse(JSON.stringify(file))
+    const fileCopy1 = cloneDeep(file)
+    const fileCopy2 = cloneDeep(file)
     await prepareResults(file, filename);
-    const cleanFile = removeProps(copyFile, ['headers', 'combined'])
+    const cleanFile = removeProps(fileCopy1, ['headers', 'combined'])
     await prepareResults(cleanFile, `no-headers-no-combined-${filename}`);
-    const roundedFile = roundNumbers(copyFile2, decimalsToRound)
+    const roundedFile = roundNumbers(fileCopy2, decimalsToRound)
     await prepareResults(roundedFile, `rounded-by-${decimalsToRound}-${filename}`);
-
-    // await fs.writeFile(`./${filename}`, JSON.stringify(roundedFile));
   }
 };

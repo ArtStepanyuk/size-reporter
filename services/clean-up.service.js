@@ -9,6 +9,7 @@ module.exports = async () => {
         await fs.unlink(path.resolve(__dirname, `../sizesResults/${file}`))
         await fs.unlink(path.resolve(__dirname, `../errors/${file}`))
         await fs.unlink(path.resolve(__dirname, `../summaryReport/${file}`))
+        await fs.unlink(path.resolve(__dirname, `../sizesReports/${file}`))
       }
       console.log('removed all results and errors')
     } catch(err) {

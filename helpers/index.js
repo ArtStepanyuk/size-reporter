@@ -2,6 +2,7 @@ const path = require("path");
 
 const errorPath = (name) => path.resolve(`./errors/${name}`);
 const sizeResults = (name) => path.resolve(`./sizesResults/${name}`);
+const sizeReports = (name) => path.resolve(`./sizesReports/${name}`);
 
 const formatBytes = (bytes, decimals = 2) => {
   if (bytes === 0) return "0 Bytes";
@@ -64,7 +65,7 @@ const roundNumbers = (obj, numberOfDecimals) => {
     }
   }
 
-  for(let i of ['annu', 'pipe']) {
+  for (let i of ["annu", "pipe"]) {
     if (obj.result[i] && obj.result[i]._data) {
       for (let item of obj.result[i]._data) {
         item.forEach(arrayMutator);
@@ -75,11 +76,32 @@ const roundNumbers = (obj, numberOfDecimals) => {
   return obj;
 };
 
+const propertiesToArray = (obj) => {
+
+  const isObject = (val) => typeof val === "object" && !Array.isArray(val);
+
+  const addDelimiter = (a, b) => (a ? `${a}.${b}` : b);
+
+  const paths = (obj = {}, head = "") => {
+    if(obj === null || obj === undefined) return 
+    return Object.entries(obj).reduce((product, [key, value]) => {
+      let fullPath = addDelimiter(head, key);
+      return isObject(value)
+        ? product.concat(paths(value, fullPath))
+        : product.concat(fullPath);
+    }, []);
+  };
+
+  return paths(obj);
+};
+
 module.exports = {
   sortObjByValues,
   formatBytes,
   sizeResults,
+  sizeReports,
   errorPath,
   removeProps,
   roundNumbers,
+  propertiesToArray,
 };
